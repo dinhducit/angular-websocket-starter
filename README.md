@@ -53,7 +53,8 @@ Config:
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { WebsocketService, WS } from './websocket';
+import { WebsocketService } from './websocket';
+import { WS } from './websocket.events';
 
 export interface IMessage {
     id: number;
