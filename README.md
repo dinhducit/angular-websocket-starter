@@ -18,6 +18,11 @@ $ npm run server
 
 > in app module
 
+Config:
+- url: string (server websocket url)
+- reconnectInterval: number (pause between connections)
+- reconnectAttempts: number (number of connection attempts)
+
 ```typescript
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -42,10 +47,6 @@ export class AppModule {
 }
 ```
 
-Config:
-- url: string (server websocket url)
-- reconnectInterval: number (pause between connections)
-- reconnectAttempts: number (number of connection attempts)
 
 > in components
 
@@ -85,6 +86,7 @@ export class AppComponent implements OnInit {
 
 }
 ```
+
 
 > config for message names
 
