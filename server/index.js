@@ -26,6 +26,7 @@ const messages = [
 const texts = ['Text Data'];
 let counter = 0;
 
+
 wss.on('connection', (ws) => {
     console.log('WebSocket connection!');
 
@@ -56,16 +57,23 @@ wss.on('connection', (ws) => {
         data: messages
     }));
 
-    setInterval(() => {
-        ws.send(JSON.stringify({
-            event: 'counter',
-            data: ++counter
-        }));
-    }, 1000);
-
     ws.send(JSON.stringify({
         event: 'update-texts',
         data: texts
     }));
+
+    const timer = () => {
+        ws.send(JSON.stringify({
+            event: 'counter',
+            data: ++counter
+        }));
+    };
+
+    const interval = setInterval(timer, 1000);
+
+    ws.on('close', () => {
+        console.log('disconnected');
+        clearInterval(interval);
+    });
 
 });
