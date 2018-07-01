@@ -13,22 +13,25 @@ import { config } from './websocket.config';
 })
 export class WebsocketService implements IWebsocketService, OnDestroy {
 
+    private config: WebSocketSubjectConfig<IWsMessage<any>>;
+
     private websocketSub: SubscriptionLike;
     private statusSub: SubscriptionLike;
 
-    private config: WebSocketSubjectConfig<IWsMessage<any>>;
     private reconnection$: Observable<number>;
     private websocket$: WebSocketSubject<IWsMessage<any>>;
     private connection$: Observer<boolean>;
+    private wsMessages$: Subject<IWsMessage<any>>;
+
     private reconnectInterval: number;
     private reconnectAttempts: number;
     private isConnected: boolean;
-    public ws$: Subject<IWsMessage<any>>;
+
 
     public status: Observable<boolean>;
 
     constructor(@Inject(config) private wsConfig: WebSocketConfig) {
-        this.ws$ = new Subject<IWsMessage<any>>();
+        this.wsMessages$ = new Subject<IWsMessage<any>>();
 
         this.reconnectInterval = wsConfig.reconnectInterval || 5000; // pause between connections
         this.reconnectAttempts = wsConfig.reconnectAttempts || 10; // number of connection attempts
@@ -64,7 +67,7 @@ export class WebsocketService implements IWebsocketService, OnDestroy {
                 }
             });
 
-        this.websocketSub = this.ws$.subscribe(
+        this.websocketSub = this.wsMessages$.subscribe(
             null, (error: ErrorEvent) => console.error('WebSocket error!', error)
         );
 
@@ -84,7 +87,7 @@ export class WebsocketService implements IWebsocketService, OnDestroy {
         this.websocket$ = new WebSocketSubject(this.config);
 
         this.websocket$.subscribe(
-            (message) => this.ws$.next(message),
+            (message) => this.wsMessages$.next(message),
             (error: Event) => {
                 if (!this.websocket$) {
                     // run reconnect if errors
@@ -109,7 +112,7 @@ export class WebsocketService implements IWebsocketService, OnDestroy {
                 this.reconnection$ = null;
 
                 if (!this.websocket$) {
-                    this.ws$.complete();
+                    this.wsMessages$.complete();
                     this.connection$.complete();
                 }
             });
@@ -121,7 +124,7 @@ export class WebsocketService implements IWebsocketService, OnDestroy {
     * */
     public on<T>(event: string): Observable<T> {
         if (event) {
-            return this.ws$.pipe(
+            return this.wsMessages$.pipe(
                 filter((message: IWsMessage<T>) => message.event === event),
                 map((message: IWsMessage<T>) => message.data)
             );
