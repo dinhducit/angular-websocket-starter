@@ -81,7 +81,7 @@ export class AppComponent implements OnInit {
     }
 
     public sendMessge(): void {
-        this.wsService.send(WS.SEND.SEND_TEXT, 'My Text Message');
+        this.wsService.send(WS.SEND.SEND_TEXT, 'My Message Text');
     }
 
 }
@@ -90,7 +90,7 @@ export class AppComponent implements OnInit {
 
 > config for message names
 
-Open src/app/websocket.events.ts adn edit names
+Open src/app/websocket.events.ts and edit names
 
 ```typescript
 export const WS = {
